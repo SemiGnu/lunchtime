@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lunchtime", "Lunchtime\Lunchtime.csproj", "{33AE3152-B4C4-4C2C-AF57-AA104247FB70}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LunchTime", "LunchTime\LunchTime.csproj", "{33AE3152-B4C4-4C2C-AF57-AA104247FB70}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lunchtime.Api", "Lunchtime.Api\Lunchtime.Api.csproj", "{98F3C709-D3F1-49F3-80D8-13231B4BF702}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LunchTime.Api", "LunchTime.Api\LunchTime.Api.csproj", "{98F3C709-D3F1-49F3-80D8-13231B4BF702}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
