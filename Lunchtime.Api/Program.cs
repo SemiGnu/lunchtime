@@ -1,18 +1,18 @@
-using System.Web;
 using HtmlAgilityPack;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;using Microsoft.VisualBasic.CompilerServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddMemoryCache();
+builder.Services.Configure<LunchTimeOptions>(builder.Configuration.GetSection("LunchTime"));
+builder.Services.AddSingleton<LunchTime>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -21,11 +21,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-
-var menu = new LunchTime(new MemoryCache(new MemoryCacheOptions()), Options.Create(new LunchTimeOptions()));
-
-
-app.MapGet("/", (bool tomorrow = false) => menu.GetMenu(tomorrow))
+app.MapGet("/", ([FromServices] LunchTime lunchTime, [FromQuery] bool tomorrow = false) => lunchTime.GetMenu(tomorrow))
     .Produces<Menu>()
     .Produces(StatusCodes.Status204NoContent)
     .Produces(StatusCodes.Status422UnprocessableEntity)
@@ -34,11 +30,15 @@ app.MapGet("/", (bool tomorrow = false) => menu.GetMenu(tomorrow))
 
 app.Run();
 
-public record LunchTimeOptions(
-    string MenuUrl = "https://kantinemeny.azurewebsites.net/ukesmeny?lokasjon=Solheimsgaten5&dato=",
-    string SuppeUrl = "https://kantinemeny.azurewebsites.net/ukesmenysuppe?lokasjon=Solheimsgaten5&dato=",
-    string XPath = "//body/div/div[@class='info boks']/div[@class='ukesmeny']/div[@class='ukedag']/div[@class='dagsinfo']/span"
-);
+public class LunchTimeOptions
+{
+    public string MenuUrl { get; init; } =
+        "https://kantinemeny.azurewebsites.net/ukesmeny?lokasjon=Solheimsgaten5&dato=";
+    public string SuppeUrl { get; init; } = 
+        "https://kantinemeny.azurewebsites.net/ukesmenysuppe?lokasjon=Solheimsgaten5&dato=";
+    public string XPath { get; init; } =
+        "//body/div/div[@class='info boks']/div[@class='ukesmeny']/div[@class='ukedag']/div[@class='dagsinfo']/span";
+}
 
 public record Menu(string? MainMenu, string? SuppeMenu);
 
@@ -49,16 +49,15 @@ public class LunchTime(IMemoryCache cache, IOptions<LunchTimeOptions> options)
     public async Task<IResult> GetMenu(bool tomorrow)
     {
         var dayIndex = (int)DateTime.UtcNow.DayOfWeek + (tomorrow ? 0 : -1);
+        
+        if (dayIndex > 4) return TypedResults.UnprocessableEntity($"{(tomorrow ? "Tomorrow is" : "It's")} {DateTime.Now.AddDays(tomorrow ? 1 : 0).DayOfWeek}, dingus!");
+        
         var menu = new Menu(
             await GetMainMenu(dayIndex),
             await GetSuppeMenu(dayIndex)
         );
-        if (menu is (null, null))
-        {
-            return dayIndex > 4
-                ? TypedResults.UnprocessableEntity($"{(tomorrow ? "Tomorrow is" : "It's")} {DateTime.Now.AddDays(tomorrow ? 1 : 0).DayOfWeek}, dingus!")
-                : TypedResults.NoContent();
-        }
+        
+        if (menu is (null, null)) return TypedResults.NoContent();
 
         return TypedResults.Ok(menu);
     }
