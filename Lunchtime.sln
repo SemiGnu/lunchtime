@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lunchtime", "Lunchtime\Lunchtime.csproj", "{33AE3152-B4C4-4C2C-AF57-AA104247FB70}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lunchtime.Api", "Lunchtime.Api\Lunchtime.Api.csproj", "{98F3C709-D3F1-49F3-80D8-13231B4BF702}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{33AE3152-B4C4-4C2C-AF57-AA104247FB70}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33AE3152-B4C4-4C2C-AF57-AA104247FB70}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33AE3152-B4C4-4C2C-AF57-AA104247FB70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98F3C709-D3F1-49F3-80D8-13231B4BF702}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98F3C709-D3F1-49F3-80D8-13231B4BF702}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98F3C709-D3F1-49F3-80D8-13231B4BF702}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98F3C709-D3F1-49F3-80D8-13231B4BF702}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

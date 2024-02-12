@@ -3,9 +3,11 @@
   "profiles": {
     "Lunchtime": {
       "commandName": "Project",
-      "environmentVariables": {
-        
-      }
+      "commandLineArgs": "lunch"
+    },
+    "Lunchtime Tomorrow": {
+      "commandName": "Project",
+      "commandLineArgs": "lunch -- tomorrow"
     }
   }
 }
