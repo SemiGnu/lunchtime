@@ -20,12 +20,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
 app.MapGet("/", (
-        [FromServices] LunchTime LunchTime, 
+        [FromServices] LunchTime lunchTime, 
         [FromQuery] bool tomorrow = false,
-        [FromQuery] string? locale = null) => LunchTime.GetMenu(tomorrow, locale))
+        [FromQuery] string? locale = null) => lunchTime.GetMenu(tomorrow, locale))
     .Produces<Menu>()
     .Produces(StatusCodes.Status204NoContent)
     .Produces(StatusCodes.Status422UnprocessableEntity)
@@ -87,13 +85,16 @@ public class LunchTime(IMemoryCache cache, IOptions<LunchTimeOptions> options)
         var web = new HtmlWeb();
         var htmlDoc = await web.LoadFromWebAsync(url);
         var menuNodes = htmlDoc.DocumentNode.SelectNodes(_options.XPath);
-        return menuNodes.Chunk(2).Select(n => string.Join(" ", n.Select(nn => nn.InnerText))).ElementAtOrDefault(dayIndex);
+        return menuNodes.Chunk(2)
+            .Select(n => string.Join(" ", n.Select(nn => nn.InnerText)))
+            .ElementAtOrDefault(dayIndex)?
+            .Replace("m/", "med ", StringComparison.OrdinalIgnoreCase);
     }
     
     private async Task<string?> Translate(string? text, string locale)
     {
         if (string.IsNullOrWhiteSpace(text)) return null;
-        var prompt = $"Translate this menu item to the locale '{locale}'. Return only plaint text.\n\n{text}";
+        var prompt = $"Translate this menu item to the locale '{locale}'. Return only plain text.\n\n{text}";
         var api = new OpenAIAPI(_options.OpenAiApiKey);
         var result = await api.Completions.CreateCompletionAsync(prompt);
         return result.Completions.First().Text.Trim();
