@@ -24,7 +24,11 @@ app.UseHttpsRedirection();
 
 var menu = new LunchTime(new MemoryCache(new MemoryCacheOptions()), Options.Create(new LunchTimeOptions()));
 
-app.MapGet("/{tomorrow}", (bool tomorrow) => menu.GetMenu(tomorrow))
+
+app.MapGet("/", (bool tomorrow = false) => menu.GetMenu(tomorrow))
+    .Produces<Menu>()
+    .Produces(StatusCodes.Status204NoContent)
+    .Produces(StatusCodes.Status422UnprocessableEntity)
     .WithName("GetMenu")
     .WithOpenApi();
 
@@ -46,8 +50,8 @@ public class LunchTime(IMemoryCache cache, IOptions<LunchTimeOptions> options)
     {
         var dayIndex = (int)DateTime.UtcNow.DayOfWeek + (tomorrow ? 0 : -1);
         var menu = new Menu(
-            await GetMainMenu((int)DateTime.UtcNow.DayOfWeek),
-            await GetSuppeMenu((int)DateTime.UtcNow.DayOfWeek)
+            await GetMainMenu(dayIndex),
+            await GetSuppeMenu(dayIndex)
         );
         if (menu is (null, null))
         {
@@ -59,13 +63,13 @@ public class LunchTime(IMemoryCache cache, IOptions<LunchTimeOptions> options)
         return TypedResults.Ok(menu);
     }
 
-    private async Task<string?> GetMainMenu(int dayIndex) => await cache.GetOrCreateAsync("mainMenu", entry =>
+    private async Task<string?> GetMainMenu(int dayIndex) => await cache.GetOrCreateAsync($"mainMenu/{dayIndex}", entry =>
     {
         entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(8);
         return GetDayMenu(_options.MenuUrl, dayIndex);
     });
 
-    private async Task<string?> GetSuppeMenu(int dayIndex) => await cache.GetOrCreateAsync("suppeMenu", entry =>
+    private async Task<string?> GetSuppeMenu(int dayIndex) => await cache.GetOrCreateAsync($"suppeMenu/{dayIndex}", entry =>
     {
         entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(8);
         return GetDayMenu(_options.SuppeUrl, dayIndex);
