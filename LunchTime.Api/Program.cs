@@ -87,7 +87,8 @@ public class LunchTime(IMemoryCache cache, IOptions<LunchTimeOptions> options)
         return menuNodes.Chunk(2)
             .Select(n => string.Join(" ", n.Select(nn => HttpUtility.HtmlDecode(nn.InnerText))))
             .ElementAtOrDefault(dayIndex)?
-            .Replace("m/", "med ", StringComparison.OrdinalIgnoreCase);
+            .Replace("m/", "med ", StringComparison.OrdinalIgnoreCase)
+            .Trim();
     }
     
     private async Task<string?> Translate(string? text, string locale)
