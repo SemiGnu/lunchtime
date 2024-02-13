@@ -1,34 +1,31 @@
+using System.Globalization;
+using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
+using System.Web;
 using OpenAI_API;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddMemoryCache();
 builder.Services.Configure<LunchTimeOptions>(builder.Configuration.GetSection("LunchTime"));
 builder.Services.AddSingleton<LunchTime>();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
 
 app.MapGet("/", (
-        [FromServices] LunchTime lunchTime, 
-        [FromQuery] bool tomorrow = false,
-        [FromQuery] string? locale = null) => lunchTime.GetMenu(tomorrow, locale))
-    .Produces<Menu>()
-    .Produces(StatusCodes.Status204NoContent)
-    .Produces(StatusCodes.Status422UnprocessableEntity)
-    .WithName("GetMenu")
-    .WithOpenApi();
+    [FromServices] LunchTime lunchTime,
+    [FromQuery] string? locale = null
+) => lunchTime.GetMenu(false, locale));
+
+app.MapGet("/tomorrow", (
+    [FromServices] LunchTime lunchTime,
+    [FromQuery] string? locale = null
+) => lunchTime.GetMenu(true, locale));
 
 app.Run();
 
@@ -48,10 +45,13 @@ public record Menu(string? MainMenu, string? SuppeMenu);
 public class LunchTime(IMemoryCache cache, IOptions<LunchTimeOptions> options)
 {
     private readonly LunchTimeOptions _options = options.Value;
+    private readonly  Regex _localeRegex = new(@"^[a-zA-Z]{2,3}-[a-zA-Z]{2}$");
 
     public async Task<IResult> GetMenu(bool tomorrow, string? locale = null)
     {
         var dayIndex = (int)DateTime.UtcNow.DayOfWeek + (tomorrow ? 0 : -1);
+
+        if (locale is not null && !_localeRegex.IsMatch(locale)) return TypedResults.BadRequest("Invalid locale, ex 'en-US' or 'nb-NO'.");
         
         if (dayIndex > 4) return TypedResults.UnprocessableEntity($"{(tomorrow ? "Tomorrow is" : "It's")} {DateTime.Now.AddDays(tomorrow ? 1 : 0).DayOfWeek}, dingus!");
         if (!string.IsNullOrWhiteSpace(locale) && string.IsNullOrWhiteSpace(_options.OpenAiApiKey)) return TypedResults.UnprocessableEntity("OpenAI API key is not set.");
@@ -86,7 +86,7 @@ public class LunchTime(IMemoryCache cache, IOptions<LunchTimeOptions> options)
         var htmlDoc = await web.LoadFromWebAsync(url);
         var menuNodes = htmlDoc.DocumentNode.SelectNodes(_options.XPath);
         return menuNodes.Chunk(2)
-            .Select(n => string.Join(" ", n.Select(nn => nn.InnerText)))
+            .Select(n => string.Join(" ", n.Select(nn => HttpUtility.HtmlDecode(nn.InnerText))))
             .ElementAtOrDefault(dayIndex)?
             .Replace("m/", "med ", StringComparison.OrdinalIgnoreCase);
     }
