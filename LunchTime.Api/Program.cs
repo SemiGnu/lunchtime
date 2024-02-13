@@ -1,10 +1,9 @@
-using System.Globalization;
 using System.Text.RegularExpressions;
+using System.Web;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
-using System.Web;
 using OpenAI_API;
 
 var builder = WebApplication.CreateBuilder(args);
