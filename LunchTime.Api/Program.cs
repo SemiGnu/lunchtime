@@ -4,6 +4,7 @@ using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
+using LunchTime.Core.Models;
 using OpenAI_API;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,18 +12,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddMemoryCache();
 builder.Services.Configure<LunchTimeOptions>(builder.Configuration.GetSection("LunchTime"));
-builder.Services.AddSingleton<LunchTime>();
+builder.Services.AddSingleton<MenuService>();
 
 var app = builder.Build();
 
 
 app.MapGet("/", (
-    [FromServices] LunchTime lunchTime,
+    [FromServices] MenuService lunchTime,
     [FromQuery] string? locale = null
 ) => lunchTime.GetMenu(false, locale));
 
 app.MapGet("/tomorrow", (
-    [FromServices] LunchTime lunchTime,
+    [FromServices] MenuService lunchTime,
     [FromQuery] string? locale = null
 ) => lunchTime.GetMenu(true, locale));
 
@@ -39,12 +40,10 @@ public class LunchTimeOptions
     public string? OpenAiApiKey { get; init; }
 }
 
-public record Menu(string? MainMenu, string? SuppeMenu);
-
-public class LunchTime(IMemoryCache cache, IOptions<LunchTimeOptions> options)
+public class MenuService(IMemoryCache cache, IOptions<LunchTimeOptions> options)
 {
     private readonly LunchTimeOptions _options = options.Value;
-    private readonly  Regex _localeRegex = new(@"^[a-zA-Z]{2,3}-[a-zA-Z]{2}$");
+    private readonly Regex _localeRegex = new(@"^[a-zA-Z]{2,3}-[a-zA-Z]{2}$");
 
     public async Task<IResult> GetMenu(bool tomorrow, string? locale = null)
     {

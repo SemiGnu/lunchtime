@@ -3,11 +3,15 @@
   "profiles": {
     "LunchTime": {
       "commandName": "Project",
-      "commandLineArgs": "lunch"
+      "commandLineArgs": ""
     },
     "LunchTime Tomorrow": {
       "commandName": "Project",
-      "commandLineArgs": "lunch -- tomorrow"
+      "commandLineArgs": "-t"
+    },
+    "LunchTime Help": {
+      "commandName": "Project",
+      "commandLineArgs": "-h"
     }
   }
 }
