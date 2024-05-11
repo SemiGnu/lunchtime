@@ -12,7 +12,7 @@ public class MenuService(DoorleService doorleService, IMemoryCache cache, IOptio
 {
     private readonly Options _options = options.Value;
     private readonly Regex _localeRegex = new(@"^[a-zA-Z]{2,3}-[a-zA-Z]{2}$");
-    private readonly Regex _stengtRegex = new(@"^\s*STENGT\s*$");
+    private readonly Regex _stengtRegex = new(@"^\s*STENGT\s.*$");
 
     private readonly DayOfWeek[] _weekdays =
         { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday };
