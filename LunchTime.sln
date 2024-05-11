@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LunchTime.Client", "LunchTi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LunchTime.Console", "LunchTime.Console\LunchTime.Console.csproj", "{48283070-C25F-4E79-8F5D-DAE4E4B73AE5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LunchTime.Web", "LunchTime.Web\LunchTime.Web.csproj", "{F782C978-E108-4207-A7CB-A8357F8A5C80}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{48283070-C25F-4E79-8F5D-DAE4E4B73AE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48283070-C25F-4E79-8F5D-DAE4E4B73AE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48283070-C25F-4E79-8F5D-DAE4E4B73AE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F782C978-E108-4207-A7CB-A8357F8A5C80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F782C978-E108-4207-A7CB-A8357F8A5C80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F782C978-E108-4207-A7CB-A8357F8A5C80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F782C978-E108-4207-A7CB-A8357F8A5C80}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,0 +1,24 @@
+@using LunchTime.Client
+
+@inject IMenuClient MenuClient;
+
+<div class="menu">
+    @foreach(var menuItem in MenuItems)
+    {
+        <LunchMenuItem MenuEntry="@menuItem" />
+    }
+</div>
+
+@code
+{
+    private MenuEntry[] MenuItems { get; set; } = Array.Empty<MenuEntry>();
+    
+    [Parameter] 
+    public string? Locale { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        MenuItems = await MenuClient.GetMenu(Locale, CancellationToken.None);
+        StateHasChanged();
+    }
+}

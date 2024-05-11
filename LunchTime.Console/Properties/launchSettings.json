@@ -5,9 +5,9 @@
       "commandName": "Project",
       "commandLineArgs": ""
     },
-    "LunchTime Tomorrow": {
+    "LunchTime Tomorrow Image": {
       "commandName": "Project",
-      "commandLineArgs": "-t"
+      "commandLineArgs": "-ti"
     },
     "LunchTime Help": {
       "commandName": "Project",

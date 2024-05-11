@@ -1,0 +1,13 @@
+<div>
+    <div>
+        <h3>@MenuEntry.DayOfWeek</h3>
+        <img width="200px" height="200px" src="@(MenuEntry.ImageUrl ?? "?")" alt="@MenuEntry.MainMenu"/>
+        <p>@MenuEntry.MainMenu</p>
+    </div>
+    
+</div>
+
+@code {
+    [Parameter] 
+    public required MenuEntry MenuEntry { get; set; }
+}
