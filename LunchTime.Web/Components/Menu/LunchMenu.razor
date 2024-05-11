@@ -3,7 +3,7 @@
 @inject IMenuClient MenuClient;
 
 <div class="menu">
-    @foreach(var menuItem in MenuItems)
+    @foreach(var menuItem in MenuItems.Where(item => item != MenuEntry.Empty))
     {
         <LunchMenuItem MenuEntry="@menuItem" />
     }
