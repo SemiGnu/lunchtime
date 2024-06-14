@@ -1,0 +1,32 @@
+[
+  {
+    "DayOfWeek": "Monday",
+    "MainMenu": "pasta med bacon, kapers og tomat toppet med parmesan",
+    "SuppeMenu": "kremet soppsuppe",
+    "ImageUrl": "/images/pasta.svg"
+  },
+  {
+    "DayOfWeek": "Tuesday",
+    "MainMenu": "pizza tilbehør",
+    "SuppeMenu": "klassisk gul ertesuppe",
+    "ImageUrl": "/images/pizza.svg"
+  },
+  {
+    "DayOfWeek": "Wednesday",
+    "MainMenu": "røstipoteter med rødbet kybos, ristet nøtter og honning",
+    "SuppeMenu": "tomatisert fiskesuppe med anis og fennikel",
+    "ImageUrl": "/images/rostipoteter.svg"
+  },
+  {
+    "DayOfWeek": "Thursday",
+    "MainMenu": "svinekjøtt med  sursøtsaus basmatiris",
+    "SuppeMenu": "fransk linsesuppe med friske urter",
+    "ImageUrl": "/images/svinekjott.svg"
+  },
+  {
+    "DayOfWeek": "Friday",
+    "MainMenu": "pulled pork taco salsa, mais og koriander",
+    "SuppeMenu": "ribolita toskansk brød suppe",
+    "ImageUrl": "/images/pulled-pork.svg"
+  }
+]

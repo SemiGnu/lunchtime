@@ -1,3 +1,6 @@
+using System.Reflection;
+using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Web;
 using HtmlAgilityPack;
@@ -8,14 +11,14 @@ using OpenAI_API;
 
 namespace LunchTime.Api;
 
-public class MenuService(DoorleService doorleService, IMemoryCache cache, IOptions<MenuService.Options> options)
+public class MenuService(DoorleService doorleService, IMemoryCache cache, IOptions<MenuService.Options> options) : IMenuService
 {
     private readonly Options _options = options.Value;
     private readonly Regex _localeRegex = new(@"^[a-zA-Z]{2,3}-[a-zA-Z]{2}$");
-    private readonly Regex _stengtRegex = new(@"^\s*STENGT\s.*$");
+    private readonly Regex _stengtRegex = new(@"^\s*STENGT.*$");
 
     private readonly DayOfWeek[] _weekdays =
-        { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday };
+        [DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday];
 
 
     public Task<IResult> GetCurrentMenu(bool tomorrow, string? locale = null)
@@ -27,7 +30,7 @@ public class MenuService(DoorleService doorleService, IMemoryCache cache, IOptio
 
     public async Task<IResult> GetDayMenu(string dayOfWeek, string? locale = null) =>
         Enum.TryParse(dayOfWeek, true, out DayOfWeek dow) ? await GetDayMenu(dow, locale) : TypedResults.NotFound();
-    public async Task<IResult> GetDayMenu(DayOfWeek dayOfWeek, string? locale)
+    private async Task<IResult> GetDayMenu(DayOfWeek dayOfWeek, string? locale)
     {
         if (locale is not null && !_localeRegex.IsMatch(locale)) return TypedResults.BadRequest("Invalid locale, ex 'en-US' or 'nb-NO'.");
 
@@ -44,7 +47,7 @@ public class MenuService(DoorleService doorleService, IMemoryCache cache, IOptio
         if (locale is not null && !_localeRegex.IsMatch(locale)) return TypedResults.BadRequest("Invalid locale, ex 'en-US' or 'nb-NO'.");
 
         var menus = await GetWeekMenu(locale);
-        
+
         if (menus?.All(m => m == MenuEntry.Empty) ?? true) return TypedResults.UnprocessableEntity("No lunch this week, dingus!");
         
         return TypedResults.Ok(menus);
@@ -53,6 +56,11 @@ public class MenuService(DoorleService doorleService, IMemoryCache cache, IOptio
 
     private async Task<MenuEntry[]?> GetWeekMenu(string? locale = null)
     {
+        if (_options.UseLocal)
+        {
+            await using var fileStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("LunchTime.Api.LocalResult.data.json");
+            return await JsonSerializer.DeserializeAsync<MenuEntry[]>(fileStream!);
+        }
         var mainMenu = await GetCachedMenu(_options.MenuUrl);
         var suppeMenu = await GetCachedMenu(_options.SuppeUrl);
         if (mainMenu is null || suppeMenu is null) return null;
@@ -89,10 +97,10 @@ public class MenuService(DoorleService doorleService, IMemoryCache cache, IOptio
     private async Task<string?> GetCachedTranslation(string? text, string? locale) => await cache.GetOrCreateAsync($"{text}-{locale}", async entry =>
     {
         entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(8);
-        return locale is null ? text : await Translate(text, locale);
+        return locale is null ? text : await GetTranslation(text, locale);
     });
     
-    private async Task<string?> Translate(string? text, string locale)
+    private async Task<string?> GetTranslation(string? text, string locale)
     {
         if (string.IsNullOrWhiteSpace(text)) return null;
         var prompt = $"Translate this menu item to the locale '{locale}'. Return only one single line of plain text.\n\n{text}";
@@ -103,14 +111,25 @@ public class MenuService(DoorleService doorleService, IMemoryCache cache, IOptio
     
     public class Options
     {
-        public static string SectionName = "MenuService";
+        public const string SectionName = "MenuService";
         public string MenuUrl { get; init; } =
             "https://kantinemeny.azurewebsites.net/ukesmeny?lokasjon=Solheimsgaten5&dato=";
         public string SuppeUrl { get; init; } = 
             "https://kantinemeny.azurewebsites.net/ukesmenysuppe?lokasjon=Solheimsgaten5&dato=";
         public string XPath { get; init; } =
+            // ReSharper disable StringLiteralTypo
             "//body/div/div[@class='info boks']/div[@class='ukesmeny']/div[@class='ukedag']/div[@class='dagsinfo']/span";
         public string? OpenAiApiKey { get; init; }
+        
+        public bool UseLocal { get; init; }
     }
+
+}
+
+public interface IMenuService
+{
+    Task<IResult> GetCurrentMenu(bool tomorrow, string? locale = null);
+    Task<IResult> GetDayMenu(string dayOfWeek, string? locale = null);
+    Task<IResult> GetMenu(string? locale = null);
 
 }

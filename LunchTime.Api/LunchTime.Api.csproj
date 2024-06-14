@@ -26,4 +26,9 @@
       <ProjectReference Include="..\LunchTime.Core\LunchTime.Core.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Remove="LocalResult\data.json" />
+      <EmbeddedResource Include="LocalResult\data.json" />
+    </ItemGroup>
+
 </Project>
