@@ -5,17 +5,24 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
     </PropertyGroup>
 
     <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
+        <Content Include="..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\LunchTime.Client\LunchTime.Client.csproj" />
-      <ProjectReference Include="..\LunchTime.Core\LunchTime.Core.csproj" />
+        <ProjectReference Include="..\LunchTime.Client\LunchTime.Client.csproj"/>
+        <ProjectReference Include="..\LunchTime.Core\LunchTime.Core.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.8"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.8"/>
+        <PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.8"/>
     </ItemGroup>
 
 </Project>

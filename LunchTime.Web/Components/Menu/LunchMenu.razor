@@ -1,12 +1,16 @@
+@using System.Globalization
 @using LunchTime.Client
 
 @inject IMenuClient MenuClient;
 
-<div class="menu">
-    @foreach(var menuItem in MenuItems.Where(item => item != MenuEntry.Empty))
-    {
-        <LunchMenuItem MenuEntry="@menuItem" />
-    }
+<div class="menu-container">
+    <h1>This week's menu</h1>
+    <div class="menu-list">
+        @foreach (var menuItem in MenuItems.Where(item => item != MenuEntry.Empty))
+        {
+            <LunchMenuItem MenuEntry="@menuItem"/>
+        }
+    </div>
 </div>
 
 @code
@@ -18,7 +22,7 @@
     
     protected override async Task OnInitializedAsync()
     {
-        MenuItems = await MenuClient.GetMenu(Locale, CancellationToken.None);
+        MenuItems = await MenuClient.GetMenu(CultureInfo.CurrentCulture.Name, CancellationToken.None);
         StateHasChanged();
     }
 }

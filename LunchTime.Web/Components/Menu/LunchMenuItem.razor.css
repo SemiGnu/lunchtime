@@ -1,0 +1,33 @@
+#menu-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.menu-item img {
+    width: 200px; 
+    height: 200px;
+    margin-right: 20px;
+}
+
+.menu-item h2 {
+    font-size: 1.5rem;
+    color: #007BFF;
+    margin-right: 20px;
+}
+
+.menu-item p {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.menu-item p:first-of-type {
+    font-weight: bold;
+}

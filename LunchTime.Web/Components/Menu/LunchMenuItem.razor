@@ -1,8 +1,10 @@
+@using System.Globalization
 <div>
-    <div>
-        <h3>@MenuEntry.DayOfWeek</h3>
+    <div class="menu-item">
         <img width="200px" height="200px" src="@(MenuEntry.ImageUrl ?? "?")" alt="@MenuEntry.MainMenu"/>
+        <h2>@(CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(MenuEntry.DayOfWeek!.Value))</h2>
         <p>@MenuEntry.MainMenu</p>
+        <p>@MenuEntry.SuppeMenu</p>
     </div>
     
 </div>

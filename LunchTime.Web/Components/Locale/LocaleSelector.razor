@@ -1,0 +1,48 @@
+@using System.Globalization
+@using LunchTime.Client
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<div class="language-selector">
+    <label for="language">Select Language: </label>
+    <select id="language" @bind="@_selectedCulture"  @bind:after="async () => await ApplySelectedCultureAsync()">
+        @foreach (var culture in _supportedCultures)
+        {
+            <option value="@culture">@culture.NativeName</option>
+        }
+    </select>
+</div>
+
+@code
+{
+    private CultureInfo[] _supportedCultures =
+    [
+        new("en-US"),
+        new("nb-NO"),
+        new("uk-UA")
+    ];
+
+    private CultureInfo? _selectedCulture;
+
+    protected override async void OnInitialized()
+    {
+        _selectedCulture = CultureInfo.CurrentCulture;
+        await JS.InvokeVoidAsync("blazorCulture.set", _selectedCulture!.Name);
+    }
+
+    private async Task ApplySelectedCultureAsync()
+    {
+        if (CultureInfo.CurrentCulture != _selectedCulture)
+        {
+            var uri = new Uri(Navigation.Uri)
+                .GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped);
+            var cultureEscaped = Uri.EscapeDataString(_selectedCulture!.Name);
+            var uriEscaped = Uri.EscapeDataString(uri);
+
+            Navigation.NavigateTo(
+                $"Culture/Set?culture={cultureEscaped}&redirectUri={uriEscaped}",
+                forceLoad: true);
+        }
+    }
+}

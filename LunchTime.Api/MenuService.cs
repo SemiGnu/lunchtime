@@ -96,8 +96,12 @@ public class MenuService(DoorleService doorleService, IMemoryCache cache, IOptio
     
     private async Task<string?> GetCachedTranslation(string? text, string? locale) => await cache.GetOrCreateAsync($"{text}-{locale}", async entry =>
     {
-        entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(8);
-        return locale is null ? text : await GetTranslation(text, locale);
+        if (locale is null or "nb-NO")
+        {
+            return text;
+        }
+        entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(23);
+        return await GetTranslation(text, locale);
     });
     
     private async Task<string?> GetTranslation(string? text, string locale)
