@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using LunchTime.Core.Models;
-using OpenAI_API;
+using OpenAI.Chat;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +38,7 @@ public class LunchTimeOptions
     public string XPath { get; init; } =
         "//body/div/div[@class='info boks']/div[@class='ukesmeny']/div[@class='ukedag']/div[@class='dagsinfo']/span";
     public string? OpenAiApiKey { get; init; }
+    public string? Model { get; init; }
 }
 
 public class MenuService(IMemoryCache cache, IOptions<LunchTimeOptions> options)
@@ -94,8 +95,8 @@ public class MenuService(IMemoryCache cache, IOptions<LunchTimeOptions> options)
     {
         if (string.IsNullOrWhiteSpace(text)) return null;
         var prompt = $"Translate this menu item to the locale '{locale}'. Return only plain text.\n\n{text}";
-        var api = new OpenAIAPI(_options.OpenAiApiKey);
-        var result = await api.Completions.CreateCompletionAsync(prompt);
-        return result.Completions.First().Text.Trim();
+        var client = new ChatClient(apiKey: _options.OpenAiApiKey, model: _options.Model);
+        var completion = await client.CompleteChatAsync(prompt);
+        return completion.Value.Content[0].Text;
     }
 }
